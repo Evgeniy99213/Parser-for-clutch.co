@@ -1,0 +1,15 @@
+{
+  "name": "clatch-scraper",
+  "version": "1.0.0",
+  "description": "",
+  "main": "Script.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "puppeteer": "^5.5.0",
+    "xlsx": "^0.16.9"
+  }
+}

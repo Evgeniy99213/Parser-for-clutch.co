@@ -2,6 +2,7 @@ const puppeteer = require('puppeteer')
 const xlsx = require('xlsx')
 
 const CATALOG_URL = 'https://clutch.co/web-developers'
+const PAGES = 100
 
 /** Selectors */
 const LINK_SELECTOR = 'div.row.provider-row-header > div > h3 > a'
@@ -25,13 +26,13 @@ async function getLinks() {
 
     allURL.push(alinks)
 
-    for (let i = 0; i < 1; i++) {
+    for (let i = 0; i < PAGES; i++) {
         await page.waitForSelector(NEXT_PAGE)
         let OK = await page.click(NEXT_PAGE)
 
         await page.waitForSelector(LINK_SELECTOR)
         let links = await page.$$eval(LINK_SELECTOR, all => all.map(a => a.href))
-        const wait = (Math.floor(Math.random() * 2)) * 1
+        const wait = (Math.floor(Math.random() * 5)) * 1000
         await page.waitFor(wait)
         allURL.push(links)
     }
@@ -75,8 +76,6 @@ async function crawl(url, page) {
     }
 }
 
-
-
 async function main() {
     const allLinks = await getLinks()
     const browser = await puppeteer.launch() 
@@ -86,25 +85,23 @@ async function main() {
 
     for(let link of allLinks) {
         const data = await crawl(link, page)
-        const secondToWait = (Math.floor(Math.random() * 2)) * 1
+        const secondToWait = (Math.floor(Math.random() * 5)) * 1000
         await page.waitFor(secondToWait)  
         db.push(data)
     }
+    
     console.log(db)
-
     getTable(db)
     await browser.close()
-
-    console.log('Script is over')
-    return
-
-} main()
-
+} 
 
 function getTable(db){
     const wb = xlsx.utils.book_new()
     const ws = xlsx.utils.json_to_sheet(db)
     xlsx.utils.book_append_sheet(wb,ws)
     xlsx.writeFile(wb,"db.xlsx")
-    console.log(db)
 }
+
+//Call a root-function
+main()
+
